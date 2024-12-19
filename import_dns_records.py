@@ -7,6 +7,7 @@ import time
 SUPPORTED_TYPES = ['A', 'AAAA', 'CNAME']
 TERRAFORM_FILE = "main.tf"
 TEMP_TF_FILE = "temp.tf"
+AWS_PROFILE = "gov-mgmt"
 
 # Check if Terraform files exist and append timestamp if necessary
 def check_or_create_tf_file():
@@ -59,7 +60,8 @@ resource "aws_route53_record" "{identifier}" {{
 
 # Fetch Route 53 Records
 def get_route53_records(hosted_zone_id):
-    route53 = boto3.client('route53')
+    session = boto3.Session(profile_name=AWS_PROFILE)
+    route53 = session.client('route53')
     records = []
     paginator = route53.get_paginator('list_resource_record_sets')
     for page in paginator.paginate(HostedZoneId=hosted_zone_id):
